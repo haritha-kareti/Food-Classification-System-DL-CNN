@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>AI Food Classification</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- =========================
+         TOP HEADER
+    ========================== -->
+
+    <div class="top-header">
+
+        <div class="logo-section">
+
+            <div class="logo-box">
+                🍽️
+            </div>
+
+            <div class="logo-text">
+
+    <h1>
+        FOOD <span>CLASSIFICATION SYSTEM USING DEEP LEARNING</span> · CNN
+    </h1>
+
+    <p>
+        VIHARA TECH · THE SKILL UNION
+    </p>
+
+</div>
+
+        </div>
+
+        <div class="header-tags">
+
+    <div class="tag">
+        ⊕ DEEP LEARNING
+    </div>
+
+    <div class="tag purple">
+        ◉ COMPUTER VISION
+    </div>
+
+</div>
+
+    </div>
+
+    <!-- =========================
+         MAIN CONTAINER
+    ========================== -->
+
+    <div class="container">
+
+        <!-- =========================
+             LEFT PANEL
+        ========================== -->
+
+        <div class="left-panel">
+
+            <div class="card profile-card">
+
+                <img src="{{ url_for('static', filename='images/profile.jpeg') }}"
+                    class="profile-image">
+
+                <h2>
+                    Kareti Haritha
+                </h2>
+
+                <p>
+                    Data Scientist
+                </p>
+
+                <div class="stats">
+
+                    <div class="stat-box">
+
+                        <span>Food Classes</span>
+
+                        <b>34</b>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <span>Models</span>
+
+                        <b>3</b>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <span>CNN Input</span>
+
+                        <b>256×256</b>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <span>VGG/ResNet</span>
+
+                        <b>224×224</b>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <span>Backend</span>
+
+                        <b>Flask</b>
+
+                    </div>
+
+                    <div class="stat-box">
+
+                        <span>Database</span>
+
+                        <b>Redis</b>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =========================
+             CENTER PANEL
+        ========================== -->
+
+        <div class="center-panel">
+
+            <!-- =========================
+                 UPLOAD CARD
+            ========================== -->
+
+            <div class="card upload-main-card">
+
+                <h3 class="section-title">
+                    ● Upload Food Image to Classify food
+                </h3>
+
+                <form action="/predict"
+                    method="POST"
+                    enctype="multipart/form-data">
+
+                <input type="hidden"
+                       id="selected_food"
+                       name="selected_food">
+
+                    <!-- IMAGE UPLOAD -->
+
+                     <div class="image-upload-container">
+
+    <label for="imageUpload" class="upload-box">
+
+        <div class="upload-content">
+
+            {% if image_path %}
+
+            <img id="previewImage"
+                 src="{{ image_path }}"
+                 class="preview-image uploaded-image">
+
+            <h3 id="uploadTitle">
+                Current Uploaded Image
+            </h3>
+
+            <p id="uploadText">
+                Switch model and predict again
+            </p>
+
+            {% else %}
+
+            <img id="previewImage"
+                 src="https://cdn-icons-png.flaticon.com/512/2965/2965300.png"
+                 class="preview-image">
+
+            <h3 id="uploadTitle">
+
+                Drag & Drop or
+                <span>Browse</span>
+
+            </h3>
+
+            <p id="uploadText">
+
+                Upload a food image
+
+            </p>
+
+            {% endif %}
+
+            <div class="file-types">
+
+                <div>JPG</div>
+                <div>PNG</div>
+                <div>WEBP</div>
+
+            </div>
+
+            <input type="file"
+                   id="imageUpload"
+                   name="image"
+                   accept="image/*">
+
+        </div>
+
+    </label>
+
+</div>
+
+                    <!-- =========================
+                         MODEL SELECTION
+                    ========================== -->
+
+                    <h3 class="section-title">
+                        ● Select Model Architecture
+                    </h3>
+
+                    <div class="model-grid">
+
+                        <!-- CUSTOM CNN -->
+
+                        <label class="model-option">
+
+                            <input type="radio"
+                                   name="model"
+                                   value="custom"
+                                   {% if selected_model == "custom" or not selected_model %}checked{% endif %}>
+
+                            <div class="model-card">
+
+                                <div class="model-icon">
+                                    🧠
+                                </div>
+
+                                <h2>
+                                    Custom CNN
+                                </h2>
+
+                                <p>
+                                    5 Conv Blocks
+                                </p>
+
+                            </div>
+
+                        </label>
+
+                        <!-- VGG16 -->
+
+                        <label class="model-option">
+
+                            <input type="radio"
+                                   name="model"
+                                   value="vgg"
+                                   {% if selected_model == "vgg" %}checked{% endif %}>
+
+                            <div class="model-card">
+
+                                <div class="model-icon">
+                                    🏛️
+                                </div>
+
+                                <h2>
+                                    VGG16
+                                </h2>
+
+                                <p>
+                                     16 Layers
+                                </p>
+
+                            </div>
+
+                        </label>
+
+                        <!-- RESNET50 -->
+
+                        <label class="model-option">
+
+                            <input type="radio"
+                                   name="model"
+                                   value="resnet"
+                                   {% if selected_model == "resnet" %}checked{% endif %}>
+
+                            <div class="model-card">
+
+                                <div class="model-icon">
+                                    🔗
+                                </div>
+
+                                <h2>
+                                    ResNet50
+                                </h2>
+
+                                <p>
+                                    Skip Connections
+                                </p>
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                    <!-- BUTTON -->
+
+                    <button type="submit"
+                            class="predict-btn"
+                            onclick="return validatePrediction()">
+                            Predict Food
+                    </button>
+
+
+                </form>
+
+            </div>
+
+            <!-- =========================
+                 ERROR MESSAGE
+            ========================== -->
+
+            {% if error %}
+
+            <div class="card error-card">
+
+                <h2>
+                    {{ error }}
+                </h2>
+
+            </div>
+
+            {% endif %}
+
+            <!-- =========================
+                 RESULT CARD
+            ========================== -->
+
+            {% if prediction %}
+
+            <div class="card result-card">
+
+                <div class="image-box">
+
+                    <img src="{{ image_path }}"
+                        class="result-image">
+
+                </div>
+
+                <div class="result-info">
+
+                    <h2 class="prediction-text">
+
+                        {{ prediction }}
+
+                    </h2>
+
+                    <div class="confidence">
+
+                        Confidence :
+                        {{ confidence }}%
+
+                    </div>
+
+                    <div class="model-used">
+
+                        Model Used :
+                        {{ model_used }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =========================
+                 NUTRITION CARD
+            ========================== -->
+
+            <div class="card nutrition-card">
+
+                <h2>
+                    Nutrition Details
+                </h2>
+
+                <div class="nutrition-grid">
+
+                    <div class="nutrition-item">
+
+                        <span>Calories</span>
+
+                        <h3>
+                            {{ nutrition.calories }}
+                        </h3>
+
+                    </div>
+
+                    <div class="nutrition-item">
+
+                        <span>Protein</span>
+
+                        <h3>
+                            {{ nutrition.protein }}
+                        </h3>
+
+                    </div>
+
+                    <div class="nutrition-item">
+
+                        <span>Carbs</span>
+
+                        <h3>
+                            {{ nutrition.carbs }}
+                        </h3>
+
+                    </div>
+
+                    <div class="nutrition-item">
+
+                        <span>Fat</span>
+
+                        <h3>
+                            {{ nutrition.fats }}
+                        </h3>
+
+                    </div>
+
+                    <div class="nutrition-item">
+
+                        <span>Fiber</span>
+
+                        <h3>
+                            {{ nutrition.fiber }}
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =========================
+                 METRICS CARD
+            ========================== -->
+
+            <div class="card metrics-card">
+
+                <h2>
+                    Model Metrics
+                </h2>
+
+                <div class="metrics-grid">
+
+                    <div class="metric-box">
+
+                        <span>Accuracy</span>
+
+                        <h3>
+                            {{ accuracy }}
+                        </h3>
+
+                    </div>
+
+                    <div class="metric-box">
+
+                        <span>Precision</span>
+
+                        <h3>
+                            {{ precision }}
+                        </h3>
+
+                    </div>
+
+                    <div class="metric-box">
+
+                        <span>Recall</span>
+
+                        <h3>
+                            {{ recall }}
+                        </h3>
+
+                    </div>
+
+                    <div class="metric-box">
+
+                        <span>F1 Score</span>
+
+                        <h3>
+                            {{ f1_score }}
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+<!-- =========================
+     RIGHT PANEL
+========================= -->
+
+<div class="right-panel">
+
+    <div class="card classes-card">
+
+        <h2>Food Classes</h2>
+
+        <div class="classes-scroll">
+
+            {% for item in classes %}
+
+            <div class="food-class"
+                 onclick="selectFoodClass(this,'{{ item }}')">
+
+                {{ item }}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+    <!-- =========================
+         IMAGE PREVIEW SCRIPT
+    ========================== -->
+
+     <script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const uploadBox = document.querySelector(".upload-box");
+    const imageUpload = document.getElementById("imageUpload");
+    const previewImage = document.getElementById("previewImage");
+    const uploadTitle = document.getElementById("uploadTitle");
+    const uploadText = document.getElementById("uploadText");
+
+    /* =========================
+       DRAG & DROP
+    ========================= */
+
+    if(uploadBox){
+
+        uploadBox.addEventListener("dragover", function(e){
+            e.preventDefault();
+            uploadBox.classList.add("dragover");
+        });
+
+        uploadBox.addEventListener("dragleave", function(){
+            uploadBox.classList.remove("dragover");
+        });
+
+        uploadBox.addEventListener("drop", function(e){
+
+            e.preventDefault();
+
+            uploadBox.classList.remove("dragover");
+
+            const file = e.dataTransfer.files[0];
+
+            if(file){
+
+                imageUpload.files = e.dataTransfer.files;
+
+                showPreview(file);
+            }
+        });
+    }
+
+    /* =========================
+       FILE SELECT
+    ========================= */
+
+    if(imageUpload){
+
+        imageUpload.addEventListener("change", function(){
+
+            const file = this.files[0];
+
+            if(file){
+                showPreview(file);
+            }
+        });
+    }
+
+    /* =========================
+       AUTO SCROLL TO RESULTS
+    ========================= */
+
+    const resultCard = document.querySelector(".result-card");
+    const centerPanel = document.querySelector(".center-panel");
+
+    if(resultCard && centerPanel){
+
+        setTimeout(function(){
+
+            centerPanel.scrollTo({
+                top: resultCard.offsetTop - 20,
+                behavior: "smooth"
+            });
+
+        }, 300);
+    }
+
+});
+
+/* =========================
+   IMAGE PREVIEW
+========================= */
+
+function showPreview(file){
+
+    const previewImage =
+        document.getElementById("previewImage");
+
+    const uploadTitle =
+        document.getElementById("uploadTitle");
+
+    const uploadText =
+        document.getElementById("uploadText");
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        previewImage.src = e.target.result;
+
+        previewImage.classList.add("uploaded-image");
+
+        uploadTitle.innerHTML = file.name;
+
+        uploadText.innerHTML =
+            "Image Selected Successfully";
+    };
+
+    reader.readAsDataURL(file);
+}
+
+/* =========================
+   FOOD CLASS SELECT
+========================= */
+
+function selectFoodClass(element, foodName){
+
+    document.querySelectorAll(".food-class")
+        .forEach(function(item){
+
+            item.classList.remove("active");
+
+        });
+
+    element.classList.add("active");
+
+    const selectedFood =
+        document.getElementById("selected_food");
+
+    if(selectedFood){
+
+        selectedFood.value = foodName;
+    }
+
+    console.log("Selected Food:", foodName);
+}
+
+/* =========================
+   PREDICT VALIDATION
+========================= */
+
+function validatePrediction(){
+
+    const selectedFood =
+        document.getElementById("selected_food");
+
+    if(selectedFood &&
+       selectedFood.value === ""){
+
+        alert(
+            "Please select a food class from the right panel."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+</script>
+
+
+</body>
+
+</html>
+
